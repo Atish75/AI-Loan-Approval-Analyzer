@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoanAI - Enterprise Underwriting Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .gauge-circle {
+      transition: stroke-dashoffset 0.8s ease-in-out, stroke 0.4s ease;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 min-h-screen py-8 px-4">
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Top Navigation / Brand Bar -->
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="p-2 bg-blue-600 text-white rounded-lg font-bold text-sm">₹</span>
+          <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Enterprise Loan Underwriting Engine</h1>
+          <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">v2.0 XAI-SHAP</span>
+        </div>
+        <p class="text-xs text-slate-500 mt-1">Automated Credit Risk Assessment with Regulatory Adverse Action & Financial Ratio Analysis</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          STP Pipeline Active
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- Left Column: Input Form -->
+      <section class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Applicant Financial Parameters</h2>
+          <span class="text-xs text-slate-400">Step 1 of 1</span>
+        </div>
+
+        <form id="loanForm" class="space-y-3.5">
+          <!-- Applicant Income -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Applicant Monthly Income (₹)</label>
+            <input type="number" id="ApplicantIncome" value="75000" required
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition" />
+          </div>
+
+          <!-- Co-Applicant Income -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Co-Applicant Monthly Income (₹)</label>
+            <input type="number" id="CoapplicantIncome" value="25000"
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition" />
+          </div>
+
+          <!-- Requested Loan Amount -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Requested Loan Amount (₹)</label>
+            <input type="number" id="LoanAmount" value="300000" required
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition" />
+          </div>
+
+          <!-- CIBIL Score (300 - 900) -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-xs font-semibold text-slate-600">Bureau CIBIL Score (300 - 900)</label>
+              <span id="cibilBadge" class="text-[11px] font-bold text-emerald-600">Prime</span>
+            </div>
+            <input type="number" id="CIBIL_Score" value="760" min="300" max="900" required
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition" />
+          </div>
+
+          <!-- Existing Monthly EMI -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Existing Monthly EMIs / Obligations (₹)</label>
+            <input type="number" id="Existing_EMI" value="8000" required
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition" />
+          </div>
+
+          <!-- Tenure Months -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Tenure (Months)</label>
+            <input type="number" id="Loan_Amount_Term" value="36" required
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition" />
+          </div>
+
+          <button type="submit" id="submitBtn"
+                  class="w-full bg-slate-900 hover:bg-blue-600 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-sm flex items-center justify-center gap-2 pt-3">
+            <span>Execute Underwriting Model</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </form>
+      </section>
+
+      <!-- Right Column: Decision, Financial Indicators & SHAP -->
+      <section class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm min-h-[560px] flex flex-col justify-between">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Evaluation & Attribution</h2>
+          <span id="statusChip" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-500">
+            Awaiting Submission
+          </span>
+        </div>
+
+        <!-- Initial Placeholder State -->
+        <div id="placeholder" class="py-24 text-center space-y-3">
+          <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xl">
+            📊
+          </div>
+          <p class="text-sm font-semibold text-slate-700">No Assessment Triggered</p>
+          <p class="text-xs text-slate-400 max-w-sm mx-auto">Fill applicant financials and run the engine to compute credit bureau scoring, derived ratios, and SHAP attribution.</p>
+        </div>
+
+        <!-- Loader -->
+        <div id="loader" class="hidden py-24 text-center space-y-3">
+          <div class="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p class="text-xs font-semibold text-slate-500">Calculating DTI/LTI ratios & computing TreeExplainer weights...</p>
+        </div>
+
+        <!-- Result Content -->
+        <div id="resultContent" class="hidden space-y-5 pt-3">
+
+          <!-- Decision Banner & Gauge -->
+          <div id="verdictBanner" class="p-5 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <span id="tierTag" class="text-[11px] font-bold tracking-wider uppercase"></span>
+              <h3 id="decisionTitle" class="text-2xl font-black tracking-tight mt-0.5"></h3>
+              <p id="decisionDesc" class="text-xs font-medium mt-1"></p>
+            </div>
+
+            <div class="relative flex items-center justify-center">
+              <svg class="w-20 h-20" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" stroke="#e2e8f0" stroke-width="8" fill="none"/>
+                <circle id="gaugeProgress" class="gauge-circle" cx="50" cy="50" r="40" stroke="#2563eb" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" fill="none"/>
+              </svg>
+              <div class="absolute text-center">
+                <span id="gaugeValue" class="text-base font-black text-slate-900 block leading-tight"></span>
+                <span class="text-[8px] uppercase font-bold text-slate-400 block">Prob</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Ratio Cards (Industry Standard) -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block">DTI Ratio</span>
+              <span id="dtiVal" class="text-sm font-extrabold text-slate-800"></span>
+              <span class="text-[10px] text-slate-500 block">&le; 50% Safe Limit</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block">LTI Ratio</span>
+              <span id="ltiVal" class="text-sm font-extrabold text-slate-800"></span>
+              <span class="text-[10px] text-slate-500 block">&le; 4.0x Standard</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block">Household Income</span>
+              <span id="incomeVal" class="text-sm font-extrabold text-slate-800"></span>
+              <span class="text-[10px] text-slate-500 block">Monthly Total</span>
+            </div>
+          </div>
+
+          <!-- SHAP Explanations -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-500">
+              <span class="uppercase tracking-wider">Top Risk / Credit Drivers (SHAP)</span>
+              <span id="baseProbLabel" class="text-slate-400"></span>
+            </div>
+            <div id="factorsContainer" class="space-y-2"></div>
+          </div>
+
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <span>Engine: Random Forest Classifier</span>
+          <span>Transparency: TreeSHAP (Local Attribution)</span>
+        </div>
+
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loanForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const placeholder = document.getElementById('placeholder');
+    const loader = document.getElementById('loader');
+    const resultContent = document.getElementById('resultContent');
+    const statusChip = document.getElementById('statusChip');
+    const cibilInput = document.getElementById('CIBIL_Score');
+    const cibilBadge = document.getElementById('cibilBadge');
+
+    // Dynamic CIBIL classification badge
+    cibilInput.addEventListener('input', () => {
+      const val = parseInt(cibilInput.value) || 0;
+      if (val >= 750) {
+        cibilBadge.innerText = 'Excellent';
+        cibilBadge.className = 'text-[11px] font-bold text-emerald-600';
+      } else if (val >= 680) {
+        cibilBadge.innerText = 'Good / Prime';
+        cibilBadge.className = 'text-[11px] font-bold text-blue-600';
+      } else if (val >= 600) {
+        cibilBadge.innerText = 'Moderate / Fair';
+        cibilBadge.className = 'text-[11px] font-bold text-amber-600';
+      } else {
+        cibilBadge.innerText = 'Subprime / Critical';
+        cibilBadge.className = 'text-[11px] font-bold text-rose-600';
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      placeholder.classList.add('hidden');
+      resultContent.classList.add('hidden');
+      loader.classList.remove('hidden');
+      submitBtn.disabled = true;
+
+      const payload = {
+        ApplicantIncome: parseFloat(document.getElementById('ApplicantIncome').value) || 0,
+        CoapplicantIncome: parseFloat(document.getElementById('CoapplicantIncome').value) || 0,
+        LoanAmount: parseFloat(document.getElementById('LoanAmount').value) || 0,
+        CIBIL_Score: parseInt(document.getElementById('CIBIL_Score').value) || 300,
+        Existing_EMI: parseFloat(document.getElementById('Existing_EMI').value) || 0,
+        Loan_Amount_Term: parseFloat(document.getElementById('Loan_Amount_Term').value) || 36
+      };
+
+      try {
+        const res = await fetch('http://127.0.0.1:8000/predict/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error('API Request Failed');
+        const data = await res.json();
+        renderResult(data);
+      } catch (err) {
+        alert('Server connection error! Check your server!');
+      } finally {
+        loader.classList.add('hidden');
+        submitBtn.disabled = false;
+      }
+    });
+
+    function renderResult(data) {
+      resultContent.classList.remove('hidden');
+
+      const verdictBanner = document.getElementById('verdictBanner');
+      const tierTag = document.getElementById('tierTag');
+      const decisionTitle = document.getElementById('decisionTitle');
+      const decisionDesc = document.getElementById('decisionDesc');
+      const gaugeValue = document.getElementById('gaugeValue');
+      const gaugeProgress = document.getElementById('gaugeProgress');
+      const factorsContainer = document.getElementById('factorsContainer');
+      const baseProbLabel = document.getElementById('baseProbLabel');
+
+      // Populate Financial Indicators
+      document.getElementById('dtiVal').innerText = data.financial_indicators.DTI_Ratio;
+      document.getElementById('ltiVal').innerText = data.financial_indicators.LTI_Ratio;
+      document.getElementById('incomeVal').innerText = data.financial_indicators.Total_Household_Income;
+
+      decisionTitle.innerText = data.verdict;
+      tierTag.innerText = data.risk_tier;
+      gaugeValue.innerText = `${data.confidence_score}%`;
+      baseProbLabel.innerText = `Prior: ${(data.shap_attribution.base_prior * 100).toFixed(1)}%`;
+
+      // Gauge animation
+      const offset = 251.2 - (251.2 * data.confidence_score) / 100;
+      gaugeProgress.style.strokeDashoffset = offset;
+
+      if (data.verdict.includes('Approved')) {
+        verdictBanner.className = 'p-5 rounded-2xl border bg-emerald-50/70 border-emerald-200 text-emerald-950 flex flex-col sm:flex-row items-center justify-between gap-4';
+        statusChip.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700';
+        statusChip.innerText = 'STP Qualified';
+        decisionDesc.innerText = 'Meets auto-underwriting credit criteria with low debt exposure.';
+        gaugeProgress.setAttribute('stroke', '#10b981');
+      } else if (data.verdict.includes('Referred')) {
+        verdictBanner.className = 'p-5 rounded-2xl border bg-amber-50/70 border-amber-200 text-amber-950 flex flex-col sm:flex-row items-center justify-between gap-4';
+        statusChip.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700';
+        statusChip.innerText = 'Manual Review';
+        decisionDesc.innerText = 'Requires credit manager review for income stability / collateral verification.';
+        gaugeProgress.setAttribute('stroke', '#f59e0b');
+      } else {
+        verdictBanner.className = 'p-5 rounded-2xl border bg-rose-50/70 border-rose-200 text-rose-950 flex flex-col sm:flex-row items-center justify-between gap-4';
+        statusChip.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700';
+        statusChip.innerText = 'High Risk';
+        decisionDesc.innerText = 'Application exceeds regulatory risk threshold; adverse action notice issued.';
+        gaugeProgress.setAttribute('stroke', '#ef4444');
+      }
+
+      // Feature Explanations
+      factorsContainer.innerHTML = '';
+      data.shap_attribution.factors.slice(0, 5).forEach(item => {
+        const isPos = item.impact_score > 0;
+        const widthPct = Math.min(Math.abs(item.impact_score) * 200, 100);
+        const sign = isPos ? '+' : '';
+
+        const row = document.createElement('div');
+        row.className = 'p-2.5 bg-slate-50 border border-slate-100 rounded-xl space-y-1';
+        row.innerHTML = `
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-semibold text-slate-700">${item.feature}</span>
+            <span class="font-mono font-bold ${isPos ? 'text-emerald-600' : 'text-rose-600'}">
+              ${sign}${(item.impact_score * 100).toFixed(2)}%
+            </span>
+          </div>
+          <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+            <div class="${isPos ? 'bg-emerald-500' : 'bg-rose-500'} h-full rounded-full transition-all duration-700" style="width: ${widthPct}%"></div>
+          </div>
+          <div class="text-[10px] text-slate-400 font-medium">${item.summary}</div>
+        `;
+        factorsContainer.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
