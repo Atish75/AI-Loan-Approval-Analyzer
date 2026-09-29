@@ -9,7 +9,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import LoanApplicationSerializer
+from django.shortcuts import render
 
+# Home / Dashboard render 
+def home_view(request):
+    return render(request, 'index.html')
 MODEL_PATH = os.path.join(settings.BASE_DIR, 'loan_model.joblib')
 
 class LoanPredictView(APIView):
@@ -107,3 +111,5 @@ class LoanPredictView(APIView):
                 "factors": factors
             }
         }, status=status.HTTP_200_OK)
+
+    

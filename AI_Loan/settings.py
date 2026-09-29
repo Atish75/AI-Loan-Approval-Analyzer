@@ -57,13 +57,17 @@ CORS_ALLOW_ALL_ORIGINS = True
 CSRF_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'AI_Loan.urls'
 
+import os
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Yahan os.path.join(BASE_DIR, '') ya jahan index.html rakhi hai wo path do:
+        'DIRS': [os.path.join(BASE_DIR)], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
